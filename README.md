@@ -1,41 +1,46 @@
-# space-sim
+# Ozzu's SpaceSim
 
-This template should help get you started developing with Vue 3 in Vite.
+## TODO
 
-## Recommended IDE Setup
+### Current focus
+- [ ] Add controllable ship
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Controls
+- [ ] Move screen by arrows / wasd, dragging or mouse to edge
+- [ ] Ability to add / remove objects
+- [ ] Ability to change object's properties
+- [ ] Camera lock on object
+- [ ] Zoom in/out
 
-## Customize configuration
+### Mechanics
+- [ ] Add controllable ship
+- [ ] Map edges
+- [ ] Stars to collect
+- [ ] Points system
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### Visuals
+- [ ] Add textures
+- [ ] Add animations
+- [ ] Add particles / trails
+- [ ] Add lighting
+- [ ] Add shadows
+- [ ] Add post-processing effects
 
-## Project Setup
+### Game
+- [ ] Level editor
+- [ ] Save/load levels
+- [ ] Add sound
+- [ ] Add music
+- [ ] Add settings
+- [ ] Add menu for sandbox, levels, settings etc
 
-```sh
-npm install
-```
+### Code
+- [ ] Optimize grid rendering
+- [ ] Spacial partitioning for collisions
 
-### Compile and Hot-Reload for Development
+### Bugs
 
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+### Done
+- [x] Basic rendering
+- [x] Basic physics, gravity
+- [x] Collisions
