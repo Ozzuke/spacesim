@@ -35,7 +35,7 @@ export class Ship extends SpaceObject {
     if (this.prevMouseForce.x || this.prevMouseForce.y) {
       mouseDirection = Math.atan2(this.prevMouseForce.y, this.prevMouseForce.x)
     }
-    const direction = mouseDirection !== null ? mouseDirection : velDirection
+    const direction = (mouseDirection !== null) ? mouseDirection : velDirection
 
     ctx.save()
     ctx.translate(x, y)

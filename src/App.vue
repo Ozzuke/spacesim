@@ -31,7 +31,7 @@ const data = ref({
   },
   pan: { x: 0, y: 0 },
   center: { x: 0, y: 0 },
-  mouse: { x: 0, y: 0, moved: false },
+  mouse: { x: 0, y: 0, moved: false, inWindow: true },
   frame: 0,
   gravity: 2.0e-3,
   map: {
@@ -69,7 +69,7 @@ const initializeSpace = () => {
 }
 
 const loop = () => {
-  if (data.value.state === 'ship') {
+  if (data.value.state === 'ship' && data.value.mouse.inWindow) {
     applyMouseForce(data.value.specials.ship, data.value.mouse)
   }
   checkCollisions(data.value.objects, data.value.gravity, data.value.map)
@@ -82,13 +82,19 @@ const loop = () => {
 }
 
 const onMouseMove = (e) => {
-  data.value.mouse = {
-    x: e.offsetX + data.value.pan.x,
-    y: e.offsetY + data.value.pan.y,
-    moved: true
-  }
+    data.value.mouse.x = e.offsetX + data.value.pan.x,
+    data.value.mouse.y = e.offsetY + data.value.pan.y,
+    data.value.mouse.moved = true
 }
 
+const onMouseLeave = () => {
+  data.value.mouse.inWindow = false
+  data.value.specials.ship.prevMouseForce = { x: 0, y: 0 }
+}
+
+const onMouseEnter = () => {
+  data.value.mouse.inWindow = true
+}
 const draw = () => {
   drawGridAndBackground()
   applyCanvasTransform()
