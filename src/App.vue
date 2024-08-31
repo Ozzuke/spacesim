@@ -69,6 +69,7 @@ const loop = () => {
   data.value.objects.forEach(obj => obj.update())
   changePan(data.value.lockOn || { x: 0, y: 0 })
   draw()
+  data.value.mouse.moved = false
   data.value.frame++
   requestAnimationFrame(loop)
 }
@@ -122,7 +123,7 @@ const drawGrid = () => {
   const endY = Math.floor((height + gridSize * 2) * 2) / 2
   context.clearRect(startX, startY, endX, endY)
 
-  context.strokeStyle = '#444' // grid color
+  context.strokeStyle = '#666' // grid color
   context.lineWidth = 0.5
 
   // vertical lines

@@ -1,4 +1,4 @@
-export const getDistance = (p1, p2) => {
+export const getDistance = (p1, p2={x: 0, y: 0}) => {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
 }
 
@@ -61,8 +61,7 @@ export const applyMouseForce = (object, mouse) => {
   if (mouse.moved){
     const maxDist = 500
     const distance = Math.min(getDistance(object.pos, mouse), maxDist)
-    console.log('Pos, mousepos, distance: ', object.pos, mouse, distance)
-    const force = Math.max(Math.log(distance * (object?.mouseForceScale || 1)), 0)
+    const force = Math.max(Math.log(distance / 100 + 1), 0) * object.mouseForceScale
     const normalVector = getNormalVector(object.pos, mouse)
     object.prevMouseForce = {
       x: force * normalVector.x,
@@ -70,7 +69,7 @@ export const applyMouseForce = (object, mouse) => {
     }
   }
   object.addForce(object.prevMouseForce)
-  console.log('Force, normal, object.force: ', object.force)
+  console.log('object.force amount: ', getDistance(object.force, {x: 0, y: 0}))
 }
 
 export const checkCollision = (obj1, obj2) => {
