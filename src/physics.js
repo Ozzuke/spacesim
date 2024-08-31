@@ -1,5 +1,11 @@
-export const getDistance = (p1, p2={x: 0, y: 0}) => {
+import { Ship } from '@/Ship.js'
+
+export const getDistance = (p1, p2 = { x: 0, y: 0 }) => {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
+}
+
+export const getDirection = (vec1) => {
+  return Math.atan2(vec1.y, vec1.x)
 }
 
 export const getVector = (p1, p2) => {
@@ -47,7 +53,7 @@ export const convertNormalToOriginal = (vector, normal) => {
   }
 }
 
-export const getGravitationalForce = (obj1, obj2, G=1.0e-3) => {
+export const getGravitationalForce = (obj1, obj2, G = 1.0e-3) => {
   const distance = getDistance(obj1.pos, obj2.pos)
   const force = G * obj1.getMass() * obj2.getMass() / (distance * distance)
   const normalVector = getNormalVector(obj1.pos, obj2.pos)
@@ -58,7 +64,7 @@ export const getGravitationalForce = (obj1, obj2, G=1.0e-3) => {
 }
 
 export const applyMouseForce = (object, mouse) => {
-  if (mouse.moved){
+  if (mouse.moved) {
     const maxDist = 500
     const distance = Math.min(getDistance(object.pos, mouse), maxDist)
     const force = Math.max(Math.log(distance / 100 + 1), 0) * object.mouseForceScale
@@ -69,7 +75,6 @@ export const applyMouseForce = (object, mouse) => {
     }
   }
   object.addForce(object.prevMouseForce)
-  console.log('object.force amount: ', getDistance(object.force, {x: 0, y: 0}))
 }
 
 export const checkCollision = (obj1, obj2) => {
@@ -84,7 +89,7 @@ export const checkCollision = (obj1, obj2) => {
   return distance < obj1.radius + obj2.radius
 }
 
-export const checkCollisions = (objects, gravity) => {
+export const checkCollisions = (objects, gravity, map) => {
   for (let i = 0; i < objects.length; i++) {
     const obj1 = objects[i]
     for (let j = i + 1; j < objects.length; j++) {
@@ -96,6 +101,36 @@ export const checkCollisions = (objects, gravity) => {
       }
       if (checkCollision(obj1, obj2)) {
         resolveCollision(obj1, obj2)
+      }
+    }
+
+    if (map.type === 'circle') {
+      let amountOver = getDistance(obj1.pos, map.center) + obj1.radius - map.radius
+      if (amountOver > 0) {
+        const normal = getNormalVector(obj1.pos, map.center)
+        if (!(obj1 instanceof Ship)) {
+          amountOver = Math.pow(amountOver, 1.1)
+          obj1.addForce({
+            x: amountOver * normal.x * map.outwardForce / map.radius * 1.0e4,
+            y: amountOver * normal.y * map.outwardForce / map.radius * 1.0e4
+          })
+          obj1.vel.x *= 0.99
+          obj1.vel.y *= 0.99
+        } else {
+          let drag = Math.cos(getDirection(normal) - getDirection(obj1.vel))
+          if (drag < 0) {
+            if (amountOver >= map.radius / 2) {
+              obj1.vel = {
+                x: normal.x * Math.sqrt(map.radius) * 3.0e-1,
+                y: normal.y * Math.sqrt(map.radius) * 3.0e-1
+              }
+            } else {
+              drag = drag / map.radius
+              obj1.vel.x /= 1 - drag * 2.0e-2 * Math.pow(amountOver, 1.5)
+              obj1.vel.y /= 1 - drag * 2.0e-2 * Math.pow(amountOver, 1.5)
+            }
+          }
+        }
       }
     }
   }
@@ -128,12 +163,12 @@ export const resolveCollision = (obj1, obj2) => {
   // move the objects so they don't overlap
   const overlap = obj1.radius + obj2.radius - getDistance(obj1.pos, obj2.pos)
   if (overlap > 0) {
-    const correctionFactor = 0.5;
-    const correction = overlap * correctionFactor;
+    const correctionFactor = 0.5
+    const correction = overlap * correctionFactor
 
-    obj1.pos.x -= correction * normal.x;
-    obj1.pos.y -= correction * normal.y;
-    obj2.pos.x += correction * normal.x;
-    obj2.pos.y += correction * normal.y;
+    obj1.pos.x -= correction * normal.x
+    obj1.pos.y -= correction * normal.y
+    obj2.pos.x += correction * normal.x
+    obj2.pos.y += correction * normal.y
   }
 }

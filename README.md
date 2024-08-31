@@ -3,7 +3,6 @@
 ## TODO
 
 ### Current focus
-- [ ] Add controllable ship
 
 ### Controls
 - [ ] Move screen by arrows / wasd, dragging or mouse to edge
@@ -13,13 +12,12 @@
 - [ ] Zoom in/out
 
 ### Mechanics
-- [ ] Add controllable ship
-- [ ] Map edges
 - [ ] Stars to collect
 - [ ] Points system
 
 ### Visuals
 - [ ] Add textures
+- [ ] Sparser grid as camera speeds up
 - [ ] Add animations
 - [ ] Add particles / trails
 - [ ] Add lighting
@@ -44,3 +42,5 @@
 - [x] Basic rendering
 - [x] Basic physics, gravity
 - [x] Collisions
+- [x] Add controllable ship
+- [x] Map edges

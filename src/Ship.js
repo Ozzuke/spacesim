@@ -5,7 +5,7 @@ export class Ship extends SpaceObject {
   constructor({
                 pos = { x: 0, y: 0 },
                 radius = 10,
-                density = 100,
+                density = 400,
                 colors = { fill: null, stroke: 'black', flame: null, flameStroke: null }
               } = {}) {
     super({ pos, radius, density, colors })
@@ -24,7 +24,7 @@ export class Ship extends SpaceObject {
     const { fill, stroke, flame, flameStroke } = this.colors
     const { x, y } = this.pos
     const r = this.radius
-    const flameLength = (1.5 + Math.random() * getDistance(this.prevMouseForce) / 500)
+    const flameLength = (1.5 + Math.random() * getDistance(this.prevMouseForce) / (5 * this.density))
     if (!fill) {
       this.colors.fill = this.generateGradient(ctx, { start: 'red', end: '#200' }, {x: 0, y: -2.5 * r}, this.radius * 5)
     }

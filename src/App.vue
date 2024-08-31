@@ -33,7 +33,14 @@ const data = ref({
   center: { x: 0, y: 0 },
   mouse: { x: 0, y: 0, moved: false },
   frame: 0,
-  gravity: 2.0e-3
+  gravity: 2.0e-3,
+  map: {
+    type: 'circle',
+    radius: 3000,
+    center: { x: 0, y: 0 },
+    collisionType: 'smooth',
+    outwardForce: 1
+  }
 })
 
 
@@ -62,10 +69,10 @@ const initializeSpace = () => {
 }
 
 const loop = () => {
-  checkCollisions(data.value.objects, data.value.gravity)
   if (data.value.state === 'ship') {
     applyMouseForce(data.value.specials.ship, data.value.mouse)
   }
+  checkCollisions(data.value.objects, data.value.gravity, data.value.map)
   data.value.objects.forEach(obj => obj.update())
   changePan(data.value.lockOn || { x: 0, y: 0 })
   draw()
@@ -83,9 +90,10 @@ const onMouseMove = (e) => {
 }
 
 const draw = () => {
-  drawGrid()
+  drawGridAndBackground()
   applyCanvasTransform()
   data.value.objects.forEach(obj => obj.draw(ctx.value))
+  drawMapBorder()
   resetCanvasTransform()
   moveBackgroundGradient()
 }
@@ -109,19 +117,53 @@ const moveBackgroundGradient = () => {
   canvas.value.style.background = `radial-gradient(circle at ${-data.value.pan.x}px ${-data.value.pan.y}px, #225, #050515, #001)`
 }
 
-const drawGrid = () => {
+const drawBackground = () => {
+  const context = ctx.value
+  const radius = (data.value.map.radius * 2) || 5000
+  const gradient = context.createRadialGradient(0, 0, 0, 0, 0, radius)
+  const pixel = 1 / radius
+  gradient.addColorStop(0, '#3b2d7a')
+  gradient.addColorStop(500 * pixel, '#1a1a3f')
+  gradient.addColorStop(1, '#001')
+  // draw circle
+  context.beginPath()
+  context.fillStyle = gradient
+  context.arc(0, 0, data.value.map.radius * 2, 0, Math.PI * 2)
+  context.fill()
+}
+
+const drawMapBorder = () => {
+  const context = ctx.value
+  const gradient = context.createRadialGradient(
+    data.value.map.center.x, data.value.map.center.y, data.value.map.radius,
+    data.value.map.center.x, data.value.map.center.y, data.value.map.radius * 6)
+  gradient.addColorStop(0, 'rgba(0, 0, 16, 0)')
+  gradient.addColorStop(0.1, 'rgba(0, 0, 16, 1)')
+  gradient.addColorStop(1, 'rgba(0, 0, 16, 1)')
+  // draw circle
+  context.beginPath()
+  context.arc(data.value.map.center.x, data.value.map.center.y, data.value.map.radius * 6, 0, Math.PI * 2)
+  context.fillStyle = gradient
+  context.fill()
+}
+
+const drawGridAndBackground = () => {
   const context = ctx.value
   const width = canvas.value?.width / devicePixelRatio
   const height = canvas.value?.height / devicePixelRatio
   const panx = data.value.pan.x
   const pany = data.value.pan.y
 
-  const gridSize = 30
+  let gridSize = 30
   const startX = Math.floor((-gridSize - (panx % gridSize)) * 2) / 2
   const startY = Math.floor((-gridSize - (pany % gridSize)) * 2) / 2
   const endX = Math.floor((width + gridSize * 2) * 2) / 2
   const endY = Math.floor((height + gridSize * 2) * 2) / 2
   context.clearRect(startX, startY, endX, endY)
+
+  applyCanvasTransform()
+  drawBackground()
+  resetCanvasTransform()
 
   context.strokeStyle = '#666' // grid color
   context.lineWidth = 0.5
