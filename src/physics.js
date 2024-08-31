@@ -96,11 +96,13 @@ export const checkCollisions = (objects, gravity, map) => {
       const obj2 = objects[j]
       if (gravity) {
         const gravitationalForce = getGravitationalForce(obj1, obj2, gravity)
-        obj1.addForce(gravitationalForce)
-        obj2.addForce(reverseVector(gravitationalForce))
+        obj1.props.affByGravity && obj1.addForce(gravitationalForce)
+        obj2.props.affByGravity && obj2.addForce(reverseVector(gravitationalForce))
       }
-      if (checkCollision(obj1, obj2)) {
-        resolveCollision(obj1, obj2)
+      if (obj1.props.collidable && obj2.props.collidable) {
+        if (checkCollision(obj1, obj2)) {
+          resolveCollision(obj1, obj2)
+        }
       }
     }
 
@@ -164,11 +166,20 @@ export const resolveCollision = (obj1, obj2) => {
   const overlap = obj1.radius + obj2.radius - getDistance(obj1.pos, obj2.pos)
   if (overlap > 0) {
     const correctionFactor = 0.5
-    const correction = overlap * correctionFactor
-
-    obj1.pos.x -= correction * normal.x
-    obj1.pos.y -= correction * normal.y
-    obj2.pos.x += correction * normal.x
-    obj2.pos.y += correction * normal.y
+    let correction = overlap * correctionFactor
+    if (!obj1.props.static && !obj2.props.static) {
+      obj1.pos.x -= correction * normal.x
+      obj1.pos.y -= correction * normal.y
+      obj2.pos.x += correction * normal.x
+      obj2.pos.y += correction * normal.y
+    } else if (!obj1.props.static) {
+      correction *= 2
+      obj1.pos.x -= correction * normal.x
+      obj1.pos.y -= correction * normal.y
+    } else if (!obj2.props.static) {
+      correction *= 2
+      obj2.pos.x += correction * normal.x
+      obj2.pos.y += correction * normal.y
+    }
   }
 }

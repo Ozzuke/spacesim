@@ -5,7 +5,14 @@ export class SpaceObject {
                 vel = { x: 0, y: 0 },
                 radius = 30,
                 density = 10,
-                colors = { fill: null, stroke: null }
+                colors = { fill: null, stroke: null },
+                props = {
+                  affByGravity: true,
+                  hasGravity: true,
+                  static: false,
+                  collidable: true,
+                  onCollision: null,
+                }
               } = {}) {
     this.name = name
     this.pos = pos
@@ -13,6 +20,7 @@ export class SpaceObject {
     this.radius = radius
     this.density = density
     this.colors = colors
+    this.props = props
     this.force = { x: 0, y: 0 }
   }
 

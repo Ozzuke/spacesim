@@ -26,9 +26,15 @@ export class Ship extends SpaceObject {
     const r = this.radius
     const flameLength = (1.5 + Math.random() * getDistance(this.prevMouseForce) / (5 * this.density))
     if (!fill) {
-      this.colors.fill = this.generateGradient(ctx, { start: 'red', end: '#200' }, {x: 0, y: -2.5 * r}, this.radius * 5)
+      this.colors.fill = this.generateGradient(ctx, { start: 'red', end: '#200' }, {
+        x: 0,
+        y: -2.5 * r
+      }, this.radius * 5)
     }
-      this.colors.flame = this.generateGradient(ctx, { start: 'rgba(255,205,0,0.9)', end: 'rgba(255,100,0,0.4)' }, {x: 0, y: 1.5 * r}, this.radius * flameLength)
+    this.colors.flame = this.generateGradient(ctx, { start: 'rgba(255,205,0,0.9)', end: 'rgba(255,100,0,0.4)' }, {
+      x: 0,
+      y: 1.5 * r
+    }, this.radius * flameLength)
 
     const velDirection = this.getVelocityDirection()
     let mouseDirection = null
@@ -42,6 +48,18 @@ export class Ship extends SpaceObject {
     ctx.rotate(direction + Math.PI / 2)
 
     ctx.lineWidth = 1
+
+    // draw ship glow
+    const glowRadius = 10 + 20 * Math.random() + Math.sqrt(10 * (0.5 + 0.5 * Math.random()) * getDistance(this.prevMouseForce) * r / (this.density))
+    const gradient = ctx.createRadialGradient(0, 1.3 * r, 0, 0, 1.3 * r, glowRadius)
+    gradient.addColorStop(0, 'rgba(255,155,0,0.15)')
+    gradient.addColorStop(0.5, 'rgba(255,255,133,0.05)')
+    gradient.addColorStop(1, 'rgba(255,255,133,0)')
+    // draw circle
+    ctx.beginPath()
+    ctx.fillStyle = gradient
+    ctx.arc(0, 1.3 * r, glowRadius, 0, Math.PI * 2)
+    ctx.fill()
 
     // draw ship as a triangle
     // fill as gradient from fill to black
