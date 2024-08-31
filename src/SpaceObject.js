@@ -4,7 +4,7 @@ export class SpaceObject {
                 pos = { x: 0, y: 0 },
                 vel = { x: 0, y: 0 },
                 radius = 30,
-                density = 1,
+                density = 10,
                 colors = { fill: null, stroke: null }
               } = {}) {
     this.name = name
@@ -14,7 +14,6 @@ export class SpaceObject {
     this.density = density
     this.colors = colors
     this.force = { x: 0, y: 0 }
-    this.collides = []
   }
 
   getArea() {

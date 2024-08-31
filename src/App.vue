@@ -14,18 +14,28 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { SpaceObject } from '@/SpaceObject.js'
-import { checkCollision, getGravitationalForce, resolveCollision, reverseVector } from '@/physics.js'
+import { applyMouseForce, checkCollisions } from '@/physics.js'
+import { Ship } from '@/Ship.js'
 
 const canvas = ref(null)
-const ctx = ref(null) // canvas context
-const objects = ref([])
-// const isDragging = ref(false)
-// const dragStart = ref(null)
-const pan = ref({ x: 0, y: 0 })
-const center = ref({ x: 0, y: 0 })
-const gravity = 2.0e-1
-
+const ctx = ref(null)
 const devicePixelRatio = window.devicePixelRatio || 1 // for HiDPI displays
+const data = ref({
+  state: 'idle',
+  isDragging: false,
+  dragStart: null,
+  objects: [],
+  lockOn: null,
+  specials: {
+    ship: new Ship()
+  },
+  pan: { x: 0, y: 0 },
+  center: { x: 0, y: 0 },
+  mouse: { x: 0, y: 0, moved: false },
+  frame: 0,
+  gravity: 2.0e-3
+})
+
 
 onMounted(() => {
   canvas.value.width = window.innerWidth * devicePixelRatio
@@ -34,54 +44,60 @@ onMounted(() => {
   canvas.value.style.height = `${window.innerHeight}px`
   ctx.value = canvas.value.getContext('2d')
   ctx.value.scale(devicePixelRatio, devicePixelRatio)
-  pan.value.x = -canvas.value.width / devicePixelRatio / 2
-  pan.value.y = -canvas.value.height / devicePixelRatio / 2
-  center.value = {...pan.value}
+  data.value.pan.x = -canvas.value.width / devicePixelRatio / 2
+  data.value.pan.y = -canvas.value.height / devicePixelRatio / 2
+  data.value.center = {...data.value.pan}
   initializeSpace()
 })
 
 const initializeSpace = () => {
-  objects.value.push(new SpaceObject({ pos: { x: 50, y: 70 }, vel: {x: 1, y: 2} }))
-  objects.value.push(new SpaceObject({ pos: { x: 150, y: 180 }, colors: { fill: 'red', stroke: 'black' }, radius: 50 }))
+  data.value.objects.push(new SpaceObject({ pos: { x: 50, y: 70 }, vel: {x: 1, y: 2} }))
+  data.value.objects.push(new SpaceObject({ pos: { x: -50, y: 300 }, vel: {x: 0, y: 0}, density: 50 }))
+  data.value.objects.push(new SpaceObject({ pos: { x: 150, y: 180 }, colors: { fill: 'red', stroke: 'black' }, radius: 50 }))
+
+  data.value.objects.push(data.value.specials.ship)
+  data.value.state = 'ship'
+  data.value.lockOn = data.value.specials.ship.pos
   loop()
 }
 
 const loop = () => {
-  checkCollisions()
-  objects.value.forEach(obj => obj.update())
-  pan.value = { x: objects.value[0].pos.x + center.value.x, y: objects.value[0].pos.y + center.value.y }
+  checkCollisions(data.value.objects, data.value.gravity)
+  if (data.value.state === 'ship') {
+    applyMouseForce(data.value.specials.ship, data.value.mouse)
+  }
+  data.value.objects.forEach(obj => obj.update())
+  changePan(data.value.lockOn || { x: 0, y: 0 })
   draw()
+  data.value.frame++
   requestAnimationFrame(loop)
 }
 
-const checkCollisions = () => {
-  for (let i = 0; i < objects.value.length; i++) {
-    const obj1 = objects.value[i]
-    for (let j = i + 1; j < objects.value.length; j++) {
-      const obj2 = objects.value[j]
-      if (gravity) {
-        const gravitationalForce = getGravitationalForce(obj1, obj2, gravity)
-        obj1.addForce(gravitationalForce)
-        obj2.addForce(reverseVector(gravitationalForce))
-      }
-      if (checkCollision(obj1, obj2)) {
-        resolveCollision(obj1, obj2)
-      }
-    }
+const onMouseMove = (e) => {
+  data.value.mouse = {
+    x: e.offsetX + data.value.pan.x,
+    y: e.offsetY + data.value.pan.y,
+    moved: true
   }
 }
 
 const draw = () => {
   drawGrid()
   applyCanvasTransform()
-  objects.value.forEach(obj => obj.draw(ctx.value))
+  data.value.objects.forEach(obj => obj.draw(ctx.value))
   resetCanvasTransform()
   moveBackgroundGradient()
 }
 
+const changePan = (pos) => {
+  data.value.pan = {
+    x: pos.x + data.value.center.x,
+    y: pos.y + data.value.center.y }
+}
+
 const applyCanvasTransform = () => {
   ctx.value.save()
-  ctx.value.translate(-pan.value.x, -pan.value.y)
+  ctx.value.translate(-data.value.pan.x, -data.value.pan.y)
 }
 
 const resetCanvasTransform = () => {
@@ -89,15 +105,15 @@ const resetCanvasTransform = () => {
 }
 
 const moveBackgroundGradient = () => {
-  canvas.value.style.background = `radial-gradient(circle at ${-pan.value.x}px ${-pan.value.y}px, #225, #050515, #001)`
+  canvas.value.style.background = `radial-gradient(circle at ${-data.value.pan.x}px ${-data.value.pan.y}px, #225, #050515, #001)`
 }
 
 const drawGrid = () => {
   const context = ctx.value
   const width = canvas.value?.width / devicePixelRatio
   const height = canvas.value?.height / devicePixelRatio
-  const panx = pan.value.x
-  const pany = pan.value.y
+  const panx = data.value.pan.x
+  const pany = data.value.pan.y
 
   const gridSize = 30
   const startX = Math.floor((-gridSize - (panx % gridSize)) * 2) / 2

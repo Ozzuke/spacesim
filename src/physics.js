@@ -19,8 +19,8 @@ export const reverseVector = (vector) => {
 export const getNormalVector = (p1, p2) => {
   const distance = getDistance(p1, p2)
   return {
-    x: (p2.x - p1.x) / distance,
-    y: (p2.y - p1.y) / distance
+    x: (p2.x - p1.x) / distance || 0,
+    y: (p2.y - p1.y) / distance || 0
   }
 }
 
@@ -57,6 +57,22 @@ export const getGravitationalForce = (obj1, obj2, G=1.0e-3) => {
   }
 }
 
+export const applyMouseForce = (object, mouse) => {
+  if (mouse.moved){
+    const maxDist = 500
+    const distance = Math.min(getDistance(object.pos, mouse), maxDist)
+    console.log('Pos, mousepos, distance: ', object.pos, mouse, distance)
+    const force = Math.max(Math.log(distance * (object?.mouseForceScale || 1)), 0)
+    const normalVector = getNormalVector(object.pos, mouse)
+    object.prevMouseForce = {
+      x: force * normalVector.x,
+      y: force * normalVector.y
+    }
+  }
+  object.addForce(object.prevMouseForce)
+  console.log('Force, normal, object.force: ', object.force)
+}
+
 export const checkCollision = (obj1, obj2) => {
   // check if close by x or y
   if (Math.abs(obj1.pos.x - obj2.pos.x) >= obj1.radius + obj2.radius
@@ -67,6 +83,23 @@ export const checkCollision = (obj1, obj2) => {
   const dy = obj1.pos.y - obj2.pos.y
   const distance = Math.sqrt(dx * dx + dy * dy)
   return distance < obj1.radius + obj2.radius
+}
+
+export const checkCollisions = (objects, gravity) => {
+  for (let i = 0; i < objects.length; i++) {
+    const obj1 = objects[i]
+    for (let j = i + 1; j < objects.length; j++) {
+      const obj2 = objects[j]
+      if (gravity) {
+        const gravitationalForce = getGravitationalForce(obj1, obj2, gravity)
+        obj1.addForce(gravitationalForce)
+        obj2.addForce(reverseVector(gravitationalForce))
+      }
+      if (checkCollision(obj1, obj2)) {
+        resolveCollision(obj1, obj2)
+      }
+    }
+  }
 }
 
 export const resolveCollision = (obj1, obj2) => {
@@ -95,9 +128,13 @@ export const resolveCollision = (obj1, obj2) => {
 
   // move the objects so they don't overlap
   const overlap = obj1.radius + obj2.radius - getDistance(obj1.pos, obj2.pos)
-  const move = overlap / 2
-  obj1.pos.x -= move * normal.x
-  obj1.pos.y -= move * normal.y
-  obj2.pos.x += move * normal.x
-  obj2.pos.y += move * normal.y
+  if (overlap > 0) {
+    const correctionFactor = 0.5;
+    const correction = overlap * correctionFactor;
+
+    obj1.pos.x -= correction * normal.x;
+    obj1.pos.y -= correction * normal.y;
+    obj2.pos.x += correction * normal.x;
+    obj2.pos.y += correction * normal.y;
+  }
 }
