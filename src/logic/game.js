@@ -47,10 +47,7 @@ export async function setUpGame() {
   while (!state.value.mounted.canvas) {
     await new Promise(resolve => setTimeout(resolve, 10))
   }
-  data.value.camera.posVec = new Vec(
-    -data.value.canvas.width / data.value.devicePixelRatio / 2,
-    -data.value.canvas.height / data.value.devicePixelRatio / 2)
-  data.value.centerVec = new Vec(data.value.camera.posVec)
+  calcAndSetCenterVec()
   startGame()
 }
 
@@ -125,6 +122,13 @@ const loop = () => {
     data.value.frameCount++
     requestAnimationFrame(loop)
   }
+}
+
+export const calcAndSetCenterVec = () => {
+  data.value.camera.posVec = new Vec(
+    -data.value.canvas.width / data.value.devicePixelRatio / 2,
+    -data.value.canvas.height / data.value.devicePixelRatio / 2)
+  data.value.centerVec = new Vec(data.value.camera.posVec)
 }
 
 const changeCameraPosition = () => {

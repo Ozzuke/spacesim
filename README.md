@@ -3,7 +3,7 @@
 ## TODO
 
 ### Current focus
-- [ ] 
+- [ ]
 
 ### Controls
 - [ ] Move screen by arrows / wasd, dragging or mouse to edge
@@ -56,3 +56,4 @@
 - [x] Refactor code for better scalability
 - [x] Add main menu
 - [x] Pause menu (on `esc`)
+- [x] Resize canvas on window resize
