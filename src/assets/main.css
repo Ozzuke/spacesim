@@ -1,6 +1,70 @@
+/* color variables */
+:root {
+    --primary: #00eeff;
+    --secondary: #001;
+    --tertiary: #56329b;
+    --quaternary: #2e145d;
+}
+
 body {
     margin: 0;
     padding: 0;
-    background: red;
+    background: #001;
     /*overflow: hidden;*/
+}
+
+#menu-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to left, rgba(46, 20, 93, 0.4), rgba(86, 50, 155, 0.8), rgba(46, 20, 93, 0.4));
+  }
+
+.menu {
+    position: fixed;
+    width: 60%;
+    min-width: 300px;
+    max-width: 600px;
+    height: 90%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--secondary); /* Dark purple */
+    border: 5px solid var(--primary); /* Thick border */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: black 0 10px 20px;
+}
+
+.menu h1 {
+    color: var(--primary);
+    font-size: 40pt;
+    font-family: monospace;
+    margin: 30px;
+}
+
+.menu button {
+    color: var(--primary);
+    background-color: var(--secondary);
+    width: 250px;
+    font-size: 20pt;
+    font-family: monospace;
+    border: 3px solid var(--primary);
+    padding: 20px 30px;
+    margin: 20px;
+    cursor: pointer;
+}
+.menu button:hover {
+    color: black;
+    background-color: var(--primary);
+    position: relative;
+    top: -2px;
+}
+.menu button:active {
+    background-color: black;
+    color: black;
 }

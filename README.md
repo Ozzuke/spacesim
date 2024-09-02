@@ -11,9 +11,22 @@
 - [ ] Camera lock on object
 - [ ] Zoom in/out
 
+### GUI
+- [ ] HUD
+- [ ] Settings menu
+- [ ] Pause menu (on `esc`)
+- [ ] Game mode selection
+- [ ] Level selection
+- [ ] Level complete screen
+- [ ] Level failed screen
+- [ ] Style improvements
+
 ### Mechanics
 - [ ] Stars to collect
+- [ ] Objects to avoid
+- [ ] Ball to push into goal / gate
 - [ ] Points system
+- [ ] Save/load levels
 
 ### Visuals
 - [ ] Add textures
@@ -21,16 +34,12 @@
 - [ ] Add animations
 - [ ] Add particles / trails
 - [ ] Add lighting
-- [ ] Add shadows
-- [ ] Add post-processing effects
 
 ### Game
 - [ ] Level editor
-- [ ] Save/load levels
-- [ ] Add sound
+- [ ] Add sound effects
 - [ ] Add music
 - [ ] Add settings
-- [ ] Add menu for sandbox, levels, settings etc
 
 ### Code
 - [ ] Optimize grid rendering
@@ -44,3 +53,5 @@
 - [x] Collisions
 - [x] Add controllable ship
 - [x] Map edges
+- [x] Refactor code for better scalability
+- [x] Add main menu

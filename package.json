@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "tinycolor2": "^1.6.0",
     "vue": "^3.4.29"
   },
   "devDependencies": {
