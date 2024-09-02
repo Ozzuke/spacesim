@@ -3,6 +3,7 @@
 ## TODO
 
 ### Current focus
+- [ ] 
 
 ### Controls
 - [ ] Move screen by arrows / wasd, dragging or mouse to edge
@@ -14,7 +15,6 @@
 ### GUI
 - [ ] HUD
 - [ ] Settings menu
-- [ ] Pause menu (on `esc`)
 - [ ] Game mode selection
 - [ ] Level selection
 - [ ] Level complete screen
@@ -55,3 +55,4 @@
 - [x] Map edges
 - [x] Refactor code for better scalability
 - [x] Add main menu
+- [x] Pause menu (on `esc`)

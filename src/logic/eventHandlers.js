@@ -1,5 +1,6 @@
 import { useDataTracker, useStateTracker } from '@/logic/states.js'
 import { Vec } from '@/logic/math.js'
+import { pauseGame, resumeGame } from '@/logic/game.js'
 
 const {
   state,
@@ -25,9 +26,24 @@ export const onMouseMove = (e) => {
 }
 
 export const onMouseLeave = () => {
-  data.value.mouse.inWindow = false
+  data.value.mouse.isInWindow = false
+  data.value.mouse.forceVec = new Vec(0, 0)
 }
 
 export const onMouseEnter = () => {
-  data.value.mouse.inWindow = true
+  data.value.mouse.isInWindow = true
+}
+
+export const onBlur = () => {
+  pauseGame()
+}
+
+export const onKeyDown = (e) => {
+  if (e.key === 'Escape') {
+    if (isGameMode('PAUSED')) {
+      resumeGame()
+    } else {
+      pauseGame()
+    }
+  }
 }

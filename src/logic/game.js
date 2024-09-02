@@ -1,11 +1,11 @@
-import { useDataTracker, useStateTracker, gameModes } from '@/logic/states.js'
+import { useDataTracker, useStateTracker, gameModes, defaultState, defaultData } from '@/logic/states.js'
 import { Vec } from '@/logic/math.js'
 import { GameMap } from '@/logic/GameMap.js'
 import { SpaceObject } from '@/logic/SpaceObject.js'
 import { Ship } from '@/logic/Ship.js'
 import { applyMouseForce, checkCollisions } from '@/logic/physics.js'
 import { renderCanvas } from '@/logic/visual.js'
-import { onMouseEnter, onMouseLeave, onMouseMove } from '@/logic/eventHandlers.js'
+import { onBlur, onKeyDown, onMouseEnter, onMouseLeave, onMouseMove } from '@/logic/eventHandlers.js'
 
 const {
   state,
@@ -24,7 +24,7 @@ const {
   data
 } = useDataTracker()
 
-export const setUpGame = () => {
+export async function setUpGame() {
   setGameMode([gameModes.SANDBOX, gameModes.PAUSED, gameModes.SETUP, gameModes.CONTROL_SHIP])
   setVisible(['gameCanvas', 'hud'])
   data.value.map = new GameMap({
@@ -41,19 +41,53 @@ export const setUpGame = () => {
   setAction('onmousemove', onMouseMove)
   setAction('onmouseenter', onMouseEnter)
   setAction('onmouseleave', onMouseLeave)
+  setAction('onblur', onBlur)
+  setAction('onkeydown', onKeyDown)
   initializeLevel()
+  while (!state.value.mounted.canvas) {
+    await new Promise(resolve => setTimeout(resolve, 10))
+  }
+  data.value.camera.posVec = new Vec(
+    -data.value.canvas.width / data.value.devicePixelRatio / 2,
+    -data.value.canvas.height / data.value.devicePixelRatio / 2)
+  data.value.centerVec = new Vec(data.value.camera.posVec)
+  startGame()
 }
 
 export const stopGame = () => {
-  setVisible([])
+  removeVisible('objectEditor')
+  removeVisible('hud')
+  removeVisible('gameCanvas')
   setGameMode()
-  data.map = null
+}
+
+export const pauseGame = () => {
+  addGameMode(gameModes.PAUSED)
+  removeGameMode(gameModes.RUNNING)
+  addVisible('menuBackground')
+  addVisible('pauseMenu')
+}
+
+export const resumeGame = () => {
+  removeGameMode(gameModes.PAUSED)
+  addGameMode(gameModes.RUNNING)
+  removeVisible('menuBackground')
+  removeVisible('pauseMenu')
+  setFocusOnCanvas()
+  loop()
+}
+
+export const restartGame = () => {
+  stopGame()
+  resetDataAndState()
+  setUpGame()
 }
 
 export const startGame = () => {
   removeGameMode(gameModes.PAUSED)
   if (!isGameMode(gameModes.SETUP && !isGameMode(gameModes.RUNNING))) {
     addGameMode(gameModes.RUNNING)
+    setFocusOnCanvas()
     loop()
   } else {
     if (isGameMode(gameModes.SETUP)) {
@@ -65,9 +99,13 @@ export const startGame = () => {
 }
 
 export const initializeLevel = () => {
-  data.value.objects.push(new SpaceObject({posVec: new Vec(50, 70), velVec: new Vec(1, 2)}))
+  data.value.objects.push(new SpaceObject({ posVec: new Vec(50, 70), velVec: new Vec(1, 2) }))
   data.value.objects.push(new SpaceObject({ posVec: new Vec(-50, 300), density: 50 }))
-  data.value.objects.push(new SpaceObject({ posVec: new Vec(150, 180), colors: { fillStyle: 'red', strokeStyle: 'black' }, radius: 50 }))
+  data.value.objects.push(new SpaceObject({
+    posVec: new Vec(150, 180),
+    colors: { fillStyle: 'red', strokeStyle: 'black' },
+    radius: 50
+  }))
 
   data.value.objects.push(data.value.specials.ship)
   data.value.camera.lockOn = data.value.specials.ship
@@ -98,3 +136,22 @@ const changeCameraPosition = () => {
   }
 }
 
+export const setFocusOnCanvas = () => {
+  data.value.canvas.focus()
+}
+
+export const resetDataAndState = () => {
+  state.value.visible = [...defaultState.visible]
+  state.value.gameMode = [...defaultState.gameMode]
+  state.value.actions = { ...defaultState.actions }
+  data.value.objects = [...defaultData.objects]
+  data.value.specials = { ...defaultData.specials }
+  data.value.eventQueue = [...defaultData.eventQueue]
+  data.value.map = defaultData.map
+  data.value.centerVec = defaultData.centerVec
+  data.value.frameCount = defaultData.frameCount
+  data.value.game = { ...defaultData.game }
+  data.value.physics = { ...defaultData.physics }
+  data.value.mouse = { ...defaultData.mouse }
+  data.value.camera = { ...defaultData.camera }
+}

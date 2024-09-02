@@ -1,22 +1,24 @@
 <template>
-  <canvas ref="canvas"
-          @mousedown="state.actions.onmousedown"
-          @mouseup="state.actions.onmouseup"
-          @mousemove="state.actions.onmousemove"
-          @mouseenter="state.actions.onmouseenter"
-          @mouseleave="state.actions.onmouseleave"
-          @wheel="state.actions.onwheel"
-          @keydown="state.actions.onkeydown"
+    <canvas ref="canvas"
+            tabindex="1"
+            @mousedown="state.actions.onmousedown"
+            @mouseup="state.actions.onmouseup"
+            @mousemove="state.actions.onmousemove"
+            @mouseenter="state.actions.onmouseenter"
+            @mouseleave="state.actions.onmouseleave"
+            @wheel="state.actions.onwheel"
+            @keydown="state.actions.onkeydown"
+            @resize="state.actions.onresize"
     >
-  </canvas>
+    </canvas>
 </template>
 
 
 <script setup>
 import { useDataTracker, useStateTracker } from '@/logic/states.js'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Vec } from '@/logic/math.js'
-import { startGame } from '@/logic/game.js'
+import { setFocusOnCanvas, startGame } from '@/logic/game.js'
 
 const {
   state,
@@ -48,16 +50,20 @@ onMounted(() => {
   canvas.value.style.height = `${window.innerHeight}px`
   ctx.value = canvas.value.getContext('2d')
   ctx.value.scale(data.value.devicePixelRatio, data.value.devicePixelRatio)
-  data.value.camera.posVec = new Vec(
-    -canvas.value.width / data.value.devicePixelRatio / 2,
-    -canvas.value.height / data.value.devicePixelRatio / 2)
-  data.value.centerVec = new Vec(data.value.camera.posVec)
-  startGame()
+  window.addEventListener('blur', state.value.actions.onblur)
+  state.value.mounted.canvas = true
+})
+
+onUnmounted(() => {
+  window.removeEventListener('blur', state.value.actions.onblur)
+  state.value.mounted.canvas = false
 })
 
 </script>
 
 
 <style scoped>
-
+  canvas {
+    outline: none;
+  }
 </style>
