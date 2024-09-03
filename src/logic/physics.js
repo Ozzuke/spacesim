@@ -37,6 +37,7 @@ export const resolveMapCollision = (obj, data) => {
       const amountOver = obj.posVec.getDistanceTo(data.value.map.centerVec) + obj.radius - data.value.map.radius
       if (amountOver > 0) {
         const normalV = obj.posVec.getNormalTo(data.value.map.centerVec)
+        obj.angularVel /= 1 + data.value.physics.mapCollisionDamping
 
         if (collisionType === 'smooth-bounce') {
           const amountOverMultiplier = Math.pow(amountOver, 1.1)
@@ -75,6 +76,22 @@ export const resolveCollisionBetweenCircles = (obj1, obj2, data) => {
   vel2final = vel2final.divide(1 + data.value.physics.collisionDamping)
   obj1.velVec = vel1final
   obj2.velVec = vel2final
+
+  // calculate angular velocity change
+  const r1 = obj1.radius
+  const r2 = obj2.radius
+  const inertia1 = m1 * r1 * r1 / 2
+  const inertia2 = m2 * r2 * r2 / 2
+  const contactPoint1 = obj1.posVec.add(normal.multiply(r1))
+  const contactPoint2 = obj2.posVec.subtract(normal.multiply(r2))
+  const relativeVel = obj1.velVec.subtract(obj2.velVec)
+  const force = relativeVel.multiply(m1 * m2 / (m1 + m2))
+  const torque1 = contactPoint1.subtract(obj1.posVec).cross(force)
+  const torque2 = contactPoint2.subtract(obj2.posVec).cross(force)
+  const angularVelChange1 = torque1 / inertia1
+  const angularVelChange2 = torque2 / inertia2
+  obj1.angularVel -= angularVelChange1 * 0.5
+  obj2.angularVel -= angularVelChange2 * 0.5
 
   // move objects apart so they don't collide again
   const overlap = obj1.radius + obj2.radius - obj1.posVec.getDistanceTo(obj2.posVec)

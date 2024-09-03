@@ -41,6 +41,14 @@ export class Vec { // vector class
     }
   }
 
+  cross(toCross) {
+    if (toCross instanceof Vec) {
+      return this.x * toCross.y - this.y * toCross.x;
+    } else {
+      throw new Error("Argument must be an instance of Vec");
+    }
+  }
+
   rotate(angle) {
     const cos = Math.cos(angle)
     const sin = Math.sin(angle)

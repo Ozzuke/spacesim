@@ -3,7 +3,7 @@
 ## TODO
 
 ### Current focus
-- [ ]
+- [ ] Ball to goal game mode
 
 ### Controls
 - [ ] Move screen by arrows / wasd, dragging or mouse to edge
@@ -57,3 +57,4 @@
 - [x] Add main menu
 - [x] Pause menu (on `esc`)
 - [x] Resize canvas on window resize
+- [x] Add ball, spin mechanics

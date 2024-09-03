@@ -42,8 +42,6 @@ const {
 const {
   data
 } = useDataTracker()
-
-
 </script>
 
 

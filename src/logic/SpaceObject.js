@@ -3,20 +3,24 @@ import { Vec } from '@/logic/math.js'
 export class SpaceObject {
   constructor({
                 name = null,
-                posVec = new Vec(0, 0),
-                velVec = new Vec(0, 0),
+                posVec = null,
+                velVec = null,
                 radius = 30,
                 density = 10,
-                colors = { fillStyle: null, strokeStyle: null },
-                props = {}
+                angle = 0,
+                angularVel = 0,
+                colors = null,
+                props = null
               } = {}) {
     this.name = name
-    this.posVec = posVec
-    this.velVec = velVec
-    this.radius = radius
-    this.density = density
-    this.colors = colors
-    this.props = props
+    this.posVec = posVec || new Vec(0, 0)
+    this.velVec = velVec || new Vec(0, 0)
+    this.radius = radius || 30
+    this.density = density || 10
+    this.angle = angle || 0
+    this.angularVel = angularVel || 0
+    this.colors = colors || { fillStyle: null, strokeStyle: null }
+    this.props = props || {}
     this.forceVec = new Vec(0, 0)
 
     this.resolveProps()
@@ -31,6 +35,7 @@ export class SpaceObject {
       isCollidable: true,
       hitboxShape: 'circle',
       onCollision: null,
+      rotates: true,
       type: 'default'
     }
     for (const propsKey in defaultProps) {
@@ -88,6 +93,8 @@ export class SpaceObject {
   update() {
     this.applyForce()
     this.move()
+    this.angle += this.angularVel
+    this.angle %= Math.PI * 2
   }
 
   draw(ctx) {

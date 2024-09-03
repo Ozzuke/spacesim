@@ -95,7 +95,9 @@ export function useStateTracker() {
 export const defaultData = {
   objects: [],
   specials: {
-    ship: null
+    ship: null,
+    ball: null,
+    portal: null
   },
   canvas: null,
   ctx: null,

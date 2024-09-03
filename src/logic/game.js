@@ -6,6 +6,7 @@ import { Ship } from '@/logic/Ship.js'
 import { applyMouseForce, checkCollisions } from '@/logic/physics.js'
 import { renderCanvas } from '@/logic/visual.js'
 import { onBlur, onKeyDown, onMouseEnter, onMouseLeave, onMouseMove } from '@/logic/eventHandlers.js'
+import { Ball } from '@/logic/Ball.js'
 
 const {
   state,
@@ -38,6 +39,7 @@ export async function setUpGame() {
     }
   })
   data.value.specials.ship = new Ship()
+  data.value.specials.ball = new Ball({posVec: new Vec(200, 200)})
   setAction('onmousemove', onMouseMove)
   setAction('onmouseenter', onMouseEnter)
   setAction('onmouseleave', onMouseLeave)
@@ -96,14 +98,15 @@ export const startGame = () => {
 }
 
 export const initializeLevel = () => {
-  data.value.objects.push(new SpaceObject({ posVec: new Vec(50, 70), velVec: new Vec(1, 2) }))
-  data.value.objects.push(new SpaceObject({ posVec: new Vec(-50, 300), density: 50 }))
-  data.value.objects.push(new SpaceObject({
-    posVec: new Vec(150, 180),
-    colors: { fillStyle: 'red', strokeStyle: 'black' },
-    radius: 50
-  }))
+  // data.value.objects.push(new SpaceObject({ posVec: new Vec(50, 70), velVec: new Vec(1, 2) }))
+  // data.value.objects.push(new SpaceObject({ posVec: new Vec(-50, 300), density: 50 }))
+  // data.value.objects.push(new SpaceObject({
+  //   posVec: new Vec(150, 180),
+  //   colors: { fillStyle: 'red', strokeStyle: 'black' },
+  //   radius: 50
+  // }))
 
+  data.value.objects.push(data.value.specials.ball)
   data.value.objects.push(data.value.specials.ship)
   data.value.camera.lockOn = data.value.specials.ship
   removeGameMode(gameModes.SETUP)
