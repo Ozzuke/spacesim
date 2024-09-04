@@ -5,7 +5,15 @@ import { SpaceObject } from '@/logic/SpaceObject.js'
 import { Ship } from '@/logic/Ship.js'
 import { applyMouseForce, checkCollisions } from '@/logic/physics.js'
 import { renderCanvas } from '@/logic/visual.js'
-import { onBlur, onKeyDown, onMouseEnter, onMouseLeave, onMouseMove } from '@/logic/eventHandlers.js'
+import {
+  onBlur,
+  onKeyDown,
+  onMousedown,
+  onMouseEnter,
+  onMouseLeave,
+  onMouseMove,
+  onMouseup
+} from '@/logic/eventHandlers.js'
 import { Ball } from '@/logic/Ball.js'
 
 const {
@@ -45,6 +53,8 @@ export async function setUpGame() {
   setAction('onmouseleave', onMouseLeave)
   setAction('onblur', onBlur)
   setAction('onkeydown', onKeyDown)
+  setAction('onmousedown', onMousedown)
+  setAction('onmouseup', onMouseup)
   initializeLevel()
   while (!state.value.mounted.canvas) {
     await new Promise(resolve => setTimeout(resolve, 10))
@@ -105,6 +115,7 @@ export const initializeLevel = () => {
   //   colors: { fillStyle: 'red', strokeStyle: 'black' },
   //   radius: 50
   // }))
+  data.value.objects.push(new SpaceObject({posVec: new Vec(-80, -120), radius: 30, density: 100, colors: {fillStyle: 'black'}}))
 
   data.value.objects.push(data.value.specials.ball)
   data.value.objects.push(data.value.specials.ship)
@@ -115,13 +126,13 @@ export const initializeLevel = () => {
 const loop = () => {
   if (isGameMode(gameModes.RUNNING)) {
     if (isGameMode(gameModes.CONTROL_SHIP) && data.value.mouse.isInWindow) {
+      data.value.physics.boostForceMultiplier = data.value.mouse.isDown ? 4 : 1
       applyMouseForce(data.value.specials.ship, data)
     }
     checkCollisions(data)
     data.value.objects.forEach(obj => obj.update())
     changeCameraPosition()
     renderCanvas(data)
-    data.value.mouse.isMoved = false
     data.value.frameCount++
     requestAnimationFrame(loop)
   }

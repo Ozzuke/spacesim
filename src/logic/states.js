@@ -114,9 +114,10 @@ export const defaultData = {
   },
   physics: {
     gravity: 2.0e-3,
-    collisionDamping: 0.01,
+    collisionDamping: 0.05,
     mapCollisionDamping: 0.01,
     mouseForceMultiplier: 40,
+    boostForceMultiplier: 1,
     maxMouseDistance: 500,
     mapOutwardForce: 1.0e4,
     mapSlowingForce: 2.0e-2
@@ -124,7 +125,7 @@ export const defaultData = {
   mouse: {
     posVec: new Vec(0, 0),
     forceVec: new Vec(0, 0),
-    isMoved: false,
+    lastMovedFrame: -1,
     isInWindow: true,
     isDown: false,
     isDrag: false,

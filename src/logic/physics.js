@@ -8,10 +8,10 @@ export const getGravitationalForce = (obj1, obj2, G = 1.0e-3) => {
 }
 
 export const applyMouseForce = (obj, data) => {
-  if (data.value.mouse.isMoved) {
+  if (data.value.mouse.lastMovedFrame === data.value.frameCount) {
     const maxDist = data.value.physics.maxMouseDistance
     const distance = Math.min(obj.posVec.getDistanceTo(data.value.mouse.posVec), maxDist)
-    const force = Math.max(Math.log(distance / 100 + 1), 0) * data.value.physics.mouseForceMultiplier
+    const force = Math.max(Math.log(distance / 100 + 1), 0) * (data.value.physics.mouseForceMultiplier * data.value.physics.boostForceMultiplier)
     const normal = obj.posVec.getNormalTo(data.value.mouse.posVec)
     data.value.mouse.forceVec = normal.multiply(force)
   }
@@ -85,13 +85,18 @@ export const resolveCollisionBetweenCircles = (obj1, obj2, data) => {
   const contactPoint1 = obj1.posVec.add(normal.multiply(r1))
   const contactPoint2 = obj2.posVec.subtract(normal.multiply(r2))
   const relativeVel = obj1.velVec.subtract(obj2.velVec)
-  const force = relativeVel.multiply(m1 * m2 / (m1 + m2))
-  const torque1 = contactPoint1.subtract(obj1.posVec).cross(force)
-  const torque2 = contactPoint2.subtract(obj2.posVec).cross(force)
-  const angularVelChange1 = torque1 / inertia1
-  const angularVelChange2 = torque2 / inertia2
-  obj1.angularVel -= angularVelChange1 * 0.5
-  obj2.angularVel -= angularVelChange2 * 0.5
+  if (relativeVel.getMagnitude() > 3) {
+    const force = relativeVel.multiply(m1 * m2 / (m1 + m2))
+    const torque1 = contactPoint1.subtract(obj1.posVec).cross(force)
+    const torque2 = contactPoint2.subtract(obj2.posVec).cross(force)
+    const angularVelChange1 = torque1 / inertia1
+    const angularVelChange2 = torque2 / inertia2
+    obj1.angularVel -= angularVelChange1 * 0.5
+    obj2.angularVel -= angularVelChange2 * 0.5
+  } else {
+    obj1.angularVel /= 1 + data.value.physics.collisionDamping
+    obj2.angularVel /= 1 + data.value.physics.collisionDamping
+  }
 
   // move objects apart so they don't collide again
   const overlap = obj1.radius + obj2.radius - obj1.posVec.getDistanceTo(obj2.posVec)

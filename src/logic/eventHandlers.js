@@ -22,7 +22,10 @@ const {
 export const onMouseMove = (e) => {
   const mouseVec = new Vec(e.offsetX, e.offsetY)
   data.value.mouse.posVec = mouseVec.add(data.value.camera.posVec)
-  data.value.mouse.isMoved = true
+  data.value.mouse.lastMovedFrame = data.value.frameCount
+  if (data.value.mouse.isDown) {
+    data.value.mouse.isDrag = true
+  }
 }
 
 export const onMouseLeave = () => {
@@ -36,6 +39,23 @@ export const onMouseEnter = () => {
 
 export const onBlur = () => {
   pauseGame()
+}
+
+export const onMousedown = (e) => {
+  data.value.mouse.isDown = true
+  const mouseVec = new Vec(e.offsetX, e.offsetY)
+  data.value.mouse.posVec = mouseVec.add(data.value.camera.posVec)
+  data.value.mouse.lastMovedFrame = data.value.frameCount
+  data.value.mouse.dragStartVec = data.value.mouse.posVec
+}
+
+export const onMouseup = (e) => {
+  data.value.mouse.isDown = false
+  data.value.mouse.isDrag = false
+  data.value.mouse.dragStartVec = null
+  const mouseVec = new Vec(e.offsetX, e.offsetY)
+  data.value.mouse.posVec = mouseVec.add(data.value.camera.posVec)
+  data.value.mouse.lastMovedFrame = data.value.frameCount
 }
 
 export const onKeyDown = (e) => {

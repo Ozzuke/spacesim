@@ -32,6 +32,8 @@ export class Ship extends SpaceObject {
   }
 
   draw(ctx) {
+    const flameLength = 1.5 + Math.random() * this.data.mouse.forceVec.getMagnitude() / 5 / (this.data.physics.boostForceMultiplier > 1 ? 4 : 1)
+    this.resolveColors(ctx, flameLength)
     const {
       fillStyle,
       strokeStyle,
@@ -42,8 +44,6 @@ export class Ship extends SpaceObject {
     } = this.colors
     const { x, y } = this.posVec
     const r = this.radius
-    const flameLength = 1.5 + Math.random() * this.data.mouse.forceVec.getMagnitude() / 5
-    this.resolveColors(ctx, flameLength)
 
     const direction = this.data.mouse.forceVec.getMagnitude()
       ? this.data.mouse.forceVec.getDirection()
@@ -59,9 +59,15 @@ export class Ship extends SpaceObject {
     // generate gradient
     const glowRadius = 10 + 20 * Math.random() + Math.sqrt(10 * (0.5 + 0.5 * Math.random()) * r * this.data.mouse.forceVec.getMagnitude()) //  / (this.density)
     const gradient = ctx.createRadialGradient(0, 1.3 * r, 0, 0, 1.3 * r, glowRadius)
-    gradient.addColorStop(0, 'rgba(255,155,0,0.15)')
-    gradient.addColorStop(0.5, 'rgba(255,255,133,0.05)')
-    gradient.addColorStop(1, 'rgba(255,255,133,0)')
+    if (this.data.physics.boostForceMultiplier > 1) {
+      gradient.addColorStop(0, 'rgba(133,133,255,0.2)')
+      gradient.addColorStop(0.5, 'rgba(133,133,255,0.08)')
+      gradient.addColorStop(1, 'rgba(133,133,255,0)')
+    } else {
+      gradient.addColorStop(0, 'rgba(255,155,0,0.15)')
+      gradient.addColorStop(0.5, 'rgba(255,255,133,0.05)')
+      gradient.addColorStop(1, 'rgba(255,255,133,0)')
+    }
     // draw circle
     ctx.beginPath()
     ctx.fillStyle = gradient
@@ -126,13 +132,14 @@ export class Ship extends SpaceObject {
     if (!this.colors.strokeStyle) {
       this.colors.strokeStyle = 'black'
     }
-    if (!this.colors.flameFillStyle) {
-      this.colors.flameFillStyle = generateGradient(
-        ctx,
-        { start: 'rgba(255,205,0,0.9)', end: 'rgba(255,100,0,0.4)' },
-        new Vec(0, 1.5 * this.radius),
-        this.radius * flameLength)
-    }
+    this.colors.flameFillStyle = generateGradient(
+      ctx,
+      this.data.physics.boostForceMultiplier > 1
+        ? { start: 'rgba(0,247,255,0.9)', end: 'rgba(0,122,140,0.4)' }
+        : { start: 'rgba(255,205,0,0.9)', end: 'rgba(255,100,0,0.4)' },
+      new Vec(0, 1.5 * this.radius),
+      this.radius * flameLength)
+    console.log(this.data.physics.boostForceMultiplier)
     if (!this.colors.thrusterFillStyle) {
       this.colors.thrusterFillStyle = 'gray'
     }
