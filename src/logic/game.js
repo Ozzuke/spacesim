@@ -36,7 +36,7 @@ const {
 
 export async function setUpGame() {
   setGameMode([gameModes.SANDBOX, gameModes.PAUSED, gameModes.SETUP, gameModes.CONTROL_SHIP])
-  setVisible(['gameCanvas', 'hud'])
+  setVisible(['gameCanvas'])
   data.value.map = new GameMap({
     type: 'circle',
     radius: 3.0e3,
@@ -67,7 +67,6 @@ export async function setUpGame() {
 
 export const stopGame = () => {
   removeVisible('objectEditor')
-  removeVisible('hud')
   removeVisible('gameCanvas')
   setGameMode()
 }
@@ -140,6 +139,15 @@ const loop = () => {
     data.value.frameCount++
     requestAnimationFrame(loop)
   }
+}
+
+export const onGoal = () => {
+  data.value.game.score++
+  console.log(data.value.game.score)
+  data.value.specials.ball.posVec = new Vec(200, 200)
+  data.value.specials.ball.velVec = new Vec(0, 0)
+  data.value.specials.ball.angle = 0
+  data.value.specials.ball.angularVelocity = 0
 }
 
 export const calcAndSetCenterVec = () => {

@@ -11,7 +11,21 @@ export const renderCanvas = (data) => {
   data.value.objects.forEach(obj => obj.draw(data.value.ctx))
   drawMapBorder(data)
   resetCanvasTransform(data)
+  drawHud(data)
+
   moveBackgroundGradient(data)
+}
+
+export const drawHud = (data) => {
+  drawScore(data)
+}
+
+export const drawScore = (data) => {
+  const ctx = data.value.ctx
+  ctx.font = '16px Arial'
+  ctx.fillStyle = '#fff'
+  ctx.textAlign = 'center'
+  ctx.fillText('Score: ' + data.value.game.score, data.value.camera.screenSize.x / 2, 20)
 }
 
 

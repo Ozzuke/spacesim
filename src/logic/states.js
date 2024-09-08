@@ -6,7 +6,6 @@ export const defaultState = {
   gameMode: [],
   mounted: {
     canvas: false,
-    hud: false,
     objectEditor: false
   },
   actions: {
@@ -135,7 +134,8 @@ export const defaultData = {
     posVec: new Vec(0, 0),
     prevPosVec: new Vec(0, 0),
     zoom: 1.0,
-    lockOn: null
+    lockOn: null,
+    screenSize: new Vec(100, 100)
   }
 }
 

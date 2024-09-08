@@ -56,6 +56,7 @@ onUnmounted(() => {
 })
 
 const resizeCanvas = () => {
+  data.value.camera.screenSize = new Vec(window.innerWidth, window.innerHeight)
   canvas.value.width = window.innerWidth * data.value.devicePixelRatio
   canvas.value.height = window.innerHeight * data.value.devicePixelRatio
   canvas.value.style.width = `${window.innerWidth}px`
