@@ -72,7 +72,6 @@ export class SpaceObject {
   getMomentum() {
     return this.getMass() * this.getVelocity()
   }
-
   addForce(force) {
     this.forceVec = this.forceVec.add(force)
   }

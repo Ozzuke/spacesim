@@ -15,6 +15,7 @@ import {
   onMouseup
 } from '@/logic/eventHandlers.js'
 import { Ball } from '@/logic/Ball.js'
+import { Goal } from '@/logic/Goal.js'
 
 const {
   state,
@@ -47,6 +48,7 @@ export async function setUpGame() {
     }
   })
   data.value.specials.ship = new Ship()
+  data.value.specials.portal = new Goal()
   data.value.specials.ball = new Ball({posVec: new Vec(200, 200)})
   setAction('onmousemove', onMouseMove)
   setAction('onmouseenter', onMouseEnter)
@@ -115,10 +117,12 @@ export const initializeLevel = () => {
   //   colors: { fillStyle: 'red', strokeStyle: 'black' },
   //   radius: 50
   // }))
-  data.value.objects.push(new SpaceObject({posVec: new Vec(-80, -120), radius: 30, density: 100, colors: {fillStyle: 'black'}}))
+  // data.value.objects.push(new SpaceObject({posVec: new Vec(-80, -120), radius: 30, density: 100, colors: {fillStyle: 'black'}}))
+
 
   data.value.objects.push(data.value.specials.ball)
   data.value.objects.push(data.value.specials.ship)
+  data.value.objects.push(data.value.specials.portal)
   data.value.camera.lockOn = data.value.specials.ship
   removeGameMode(gameModes.SETUP)
 }

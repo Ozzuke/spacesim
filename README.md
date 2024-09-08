@@ -59,3 +59,4 @@
 - [x] Resize canvas on window resize
 - [x] Add ball, spin mechanics
 - [x] Ship boost
+- [x] Static object support

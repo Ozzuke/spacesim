@@ -139,7 +139,6 @@ export class Ship extends SpaceObject {
         : { start: 'rgba(255,205,0,0.9)', end: 'rgba(255,100,0,0.4)' },
       new Vec(0, 1.5 * this.radius),
       this.radius * flameLength)
-    console.log(this.data.physics.boostForceMultiplier)
     if (!this.colors.thrusterFillStyle) {
       this.colors.thrusterFillStyle = 'gray'
     }

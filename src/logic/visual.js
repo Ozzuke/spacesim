@@ -1,11 +1,11 @@
 export const generateGradient = (ctx, colors, posV, radius) => {
-    const gradient = ctx.createRadialGradient(posV.x, posV.y, 0, posV.x, posV.y, radius)
-    gradient.addColorStop(0, colors.start)
-    gradient.addColorStop(1, colors.end)
-    return gradient
-  }
+  const gradient = ctx.createRadialGradient(posV.x, posV.y, 0, posV.x, posV.y, radius)
+  gradient.addColorStop(0, colors.start)
+  gradient.addColorStop(1, colors.end)
+  return gradient
+}
 
- export const renderCanvas = (data) => {
+export const renderCanvas = (data) => {
   drawGridAndBackground(data)
   applyCanvasTransform(data)
   data.value.objects.forEach(obj => obj.draw(data.value.ctx))

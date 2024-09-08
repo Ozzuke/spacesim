@@ -122,20 +122,40 @@ export const checkCollisions = (data) => {
     for (let j = i + 1; j < objects.length; j++) {
       const obj2 = objects[j]
       if (obj1.props.isCollidable && obj2.props.isCollidable && checkCollision(obj1, obj2)) {
-        if (obj1.props.hitboxShape === 'circle' && obj2.props.hitboxShape === 'circle') {
-          resolveCollisionBetweenCircles(obj1, obj2, data)
-        } else {
-          console.error('Unsupported hitbox shape')
-        }
         if (obj1.props.onCollision) {
           obj1.props.onCollision(obj2)
         }
         if (obj2.props.onCollision) {
           obj2.props.onCollision(obj1)
         }
+        if (obj1.props.hitboxShape === 'circle' && obj2.props.hitboxShape === 'circle') {
+          let obj1_density = 1
+          let obj2_density = 1
+          let staticPresent = false
+          if (obj1.props.isStatic) {
+            staticPresent = true
+            obj1_density = obj1.density
+            obj1.density = obj2.density * 10
+          } else if (obj2.props.isStatic) {
+            staticPresent = true
+            obj2_density = obj2.density
+            obj2.density = obj1.density * 10
+          }
+          resolveCollisionBetweenCircles(obj1, obj2, data)
+          if (staticPresent) {
+            obj1.props.isStatic && (obj1.density = obj1_density)
+            obj2.props.isStatic && (obj2.density = obj2_density)
+          }
+        } else {
+          console.error('Unsupported hitbox shape')
+        }
       }
       if (data.value.physics.gravity) {
         const gravitationalForce = getGravitationalForce(obj1, obj2, data.value.physics.gravity)
+        if (isNaN(gravitationalForce.x)) {
+          console.error(obj1, obj2, gravitationalForce)
+          throw new Error('Failed no NaN check before collision for gravitational force')
+        }
         obj1.props.isAffByGravity && obj1.addForce(gravitationalForce)
         obj2.props.isAffByGravity && obj2.addForce(gravitationalForce.multiply(-1))
       }
