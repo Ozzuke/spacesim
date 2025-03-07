@@ -147,7 +147,7 @@ export const onGoal = () => {
   data.value.specials.ball.posVec = new Vec(200, 200)
   data.value.specials.ball.velVec = new Vec(0, 0)
   data.value.specials.ball.angle = 0
-  data.value.specials.ball.angularVelocity = 0
+  data.value.specials.ball.angularVel = 0
 }
 
 export const calcAndSetCenterVec = () => {
